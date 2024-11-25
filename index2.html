@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+        }
+        #image-track{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(0%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+
+        }
+        .image{
+            width: 450px;
+            height: 550px;
+            object-fit: cover;
+            object-position: 50% center;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="image-track" data-mouse-down-at="0" data-prev-percentage="0">
+        <img src="https://i.ytimg.com/vi/72nryowbyz0/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AHUBoAC4AOKAgwIABABGEsgLyh_MA8=&rs=AOn4CLB2XWAx0g5oWBXbPxBPYsE981sBrA" alt="" class="image">
+        <img src="https://i.pinimg.com/originals/f2/1d/b8/f21db860bf878598d01e6de9baf7121e.jpg" alt="" class="image" draggable="false">
+        <img src="https://marine-cafe.com/wp-content/uploads/2020/09/ocean-wave.jpg" alt="" class="image" draggable="false">
+        <img src="https://i.pinimg.com/originals/f5/0c/3a/f50c3a8310556367289364bca5f02a92.jpg" alt="" class="image" draggable="false">
+        <img src="https://launches-media.endclothing.com/DA3997-010_launches_hero_landscape_4.jpg" alt="" class="image" draggable="false">
+        <img src="https://i.pinimg.com/originals/4e/70/c7/4e70c7cc29f2aa3162dbc29241931e0c.jpg" alt="" class="image" draggable="false">
+        <img src="https://i.pinimg.com/originals/4e/17/4c/4e174c2fa70d3343797ed62f7676c09a.jpg" alt="" class="image" draggable="false">
+        <img src="https://i.pinimg.com/originals/61/2e/08/612e0840169df16e314e4c22bd405b1b.jpg " alt="" class="image" draggable="false">
+    </div>
+<script>
+    let track = document.getElementById('image-track');
+    document.addEventListener('mousedown', (e)=>{
+        track.dataset.mouseDownAt = e.clientX;
+    });
+    document.addEventListener('mouseup', (e)=>{
+        track.dataset.mouseDownAt = "0"
+        track.dataset.prevPercentage = track.dataset.percentage;
+    });
+    document.addEventListener('mousemove', (e)=>{
+        if(track.dataset.mouseDownAt === "0") return;
+
+        const mouseDelta = parseFloat(track.dataset.mouseDownAt) - e.clientX;
+        const maxDelta = window.innerWidth / 2;
+
+        const percentage = (mouseDelta/maxDelta) * -100;
+        const updatePercentage = parseFloat(track.dataset.prevPercentage) + percentage;
+        const nextPercentage = Math.max(Math.min(updatePercentage,0), -100)
+        track.dataset.percentage = nextPercentage
+        
+        track.animate(
+            {transform:`translate(${nextPercentage}%, -50%)`},
+            {fill: 'forwards', duration: 1500}
+        )
+
+        for(const image of track.getElementsByClassName('image'))
+        {
+        image.animate(
+            {objectPosition:`${100 + nextPercentage}% center`},
+            {duration:1500, fill:'forwards'}
+        )
+    }
+    });
+    
+    
+</script>
+
+</body>
+</html>

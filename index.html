@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body{
+        margin: 0;padding: 0;
+        /* overflow-x: hidden; */
+        width: 100vw;
+        /* height: 100vh; */
+        scroll-behavior: forwards;
+    }
+    /* .image-track{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(0%, -50%);
+    }
+    .image{
+        min-width: 25vw;
+        height: 50vh;
+        aspect-ratio: 1;
+        object-fit: cover;
+        object-position: 50% center;
+    } */
+
+    .image-track {
+        display: flex;
+        gap: 4vmin;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(0%, -50%); 
+        user-select: none; /* -- Prevent image highlighting -- */
+    }   
+
+    .image-track > .image {
+        width: 40vmin;
+        height: 56vmin;
+        object-fit: cover;
+        object-position: 100% center;
+    }
+</style>
+<body>
+    <div class="image-track"  data-mouse-down-at="0" data-prev-percentage="0">
+        <img src="https://www.apetogentleman.com/wp-content/uploads/2017/11/CG_FW17_1055M_Drummond3-in-1Parka_646.jpg" alt="" class="image">
+        <img src="https://i.insider.com/5693dbb2e6183e8a0f8b8493" alt="" class="image">
+        <img src="https://cdn.hemden.de/media/image/f0/e0/10/Winterjacken_Herren.jpg" alt="" class="image">
+        <img src="https://i.pinimg.com/originals/55/e8/92/55e89248dcbb713d2718a7e4fedfbe29.jpg" alt="" class="image">
+        <img src="https://i.pinimg.com/originals/f5/20/e2/f520e2350f6b2be0ef45b9b2ea34b22c.jpg" alt="" class="image">
+        <img src="https://us03-imgcdn.ymcart.com/64088/2021/04/15/2/4/240175bf13a03d62.jpg" alt="" class="image">
+        <img src="https://i.pinimg.com/736x/23/ed/7f/23ed7f3cc7801b9a95143ad24a426c09--winter-jackets-women-ladies-jackets.jpg" alt="" class="image">
+        <img src="https://avatars.mds.yandex.net/i?id=4629d975c2c26a9d791fc439274f51ef_l-5232270-images-thumbs&ref=rim&n=13&w=800&h=800" alt="" class="image">
+    </div>
+    <script>
+            // let track = document.querySelector('.image-track');
+            
+            
+            // document.addEventListener('mousedown', function(e){
+            //     let mouseX = e.pageX;
+            //     let mouseY = e.pageY;
+            //     console.log(mouseX, mouseY);
+                
+            // })
+
+            const track = document.querySelector(".image-track");
+
+const handleOnDown = e => track.dataset.mouseDownAt = e.clientX;
+
+const handleOnUp = (e) => {
+  track.dataset.mouseDownAt = "0";  
+  track.dataset.prevPercentage = track.dataset.percentage;
+}
+
+const handleOnMove = e => {
+  if(track.dataset.mouseDownAt === "0") return;
+  
+  const mouseDelta = parseFloat(track.dataset.mouseDownAt) - e.clientX,
+        maxDelta = window.innerWidth / 2;
+        
+        console.log(maxDelta);
+  const percentage = (mouseDelta / maxDelta) * -100,
+        nextPercentageUnconstrained = parseFloat(track.dataset.prevPercentage) + percentage,
+        nextPercentage = Math.max(Math.min(nextPercentageUnconstrained, 0), -100);
+  
+  track.dataset.percentage = nextPercentage;
+  
+  track.animate({
+    transform: `translate(${nextPercentage}%, -50%)`
+  }, { duration: 1200, fill: "forwards" });
+  
+  for(const image of track.getElementsByClassName("image")) {
+    image.animate({
+      objectPosition: `${100 + nextPercentage}% center`
+    }, { duration: 1200, fill: "forwards" });
+  }
+}
+
+/* -- Had to add extra lines for touch events -- */
+
+window.onmousedown = e => handleOnDown(e);
+
+window.ontouchstart = e => handleOnDown(e.touches[0]);
+
+window.onmouseup = e => handleOnUp(e);
+
+window.ontouchend = e => handleOnUp(e.touches[0]);
+
+window.onmousemove = e => handleOnMove(e);
+
+window.ontouchmove = e => handleOnMove(e.touches[0]);
+
+
+    </script>
+</body>
+</html>
