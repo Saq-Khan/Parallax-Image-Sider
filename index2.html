@@ -8,6 +8,8 @@
         body{
             margin: 0;
             padding: 0;
+            background-color: rgba(0, 0, 0, 0.884);
+            /* height: 200vh; */
         }
         #image-track{
             position: absolute;
@@ -17,15 +19,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 50px;
+            gap: 30px;
 
         }
         .image{
-            width: 450px;
-            height: 550px;
+            width: 550px;
+            height: 650px;
             object-fit: cover;
             object-position: 50% center;
             user-select: none;
+            border-radius: 15px;
+        }
+        @media only screen and (max-width:600px){
+            .image{
+            width: 80vw;
+            height: 100vw;}
         }
     </style>
 </head>
@@ -43,18 +51,20 @@
     </div>
 <script>
     let track = document.getElementById('image-track');
-    document.addEventListener('mousedown', (e)=>{
-        track.dataset.mouseDownAt = e.clientX;
-    });
-    document.addEventListener('mouseup', (e)=>{
+    function mousedown(e){
+        track.dataset.mouseDownAt = e.clientX || e.touches[0].clientX
+    };
+    function mouseup(e){
         track.dataset.mouseDownAt = "0"
         track.dataset.prevPercentage = track.dataset.percentage;
-    });
-    document.addEventListener('mousemove', (e)=>{
+    };
+    function mousemove(e){
         if(track.dataset.mouseDownAt === "0") return;
 
-        const mouseDelta = parseFloat(track.dataset.mouseDownAt) - e.clientX;
-        const maxDelta = window.innerWidth / 2;
+        let mousePos = e.clientX || e.touches[0].clientX;
+
+        const mouseDelta = parseFloat(track.dataset.mouseDownAt) - mousePos;
+        const maxDelta = window.innerWidth;
 
         const percentage = (mouseDelta/maxDelta) * -100;
         const updatePercentage = parseFloat(track.dataset.prevPercentage) + percentage;
@@ -73,9 +83,21 @@
             {duration:1500, fill:'forwards'}
         )
     }
-    });
-    
-    
+
+
+};
+
+window.onmousedown = e => mousedown(e);
+window.onmousemove = e => mousemove(e);
+window.onmouseup = e => mouseup(e);
+
+window.ontouchstart = e => mousedown(e.touches[0]);
+window.ontouchmove = e => mousemove(e.touches[0]);
+window.ontouchend = e => mouseup(e.touches[0]);
+
+
+
+
 </script>
 
 </body>
